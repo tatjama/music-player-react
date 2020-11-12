@@ -1,0 +1,16 @@
+.player{
+    min-height: 20vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.time-control{
+    background-color: bisque;
+    width: 50%;
+    display: flex;
+    input{
+        width: 100%;
+        padding: 1rem 2rem;
+    }
+}
