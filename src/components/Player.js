@@ -4,7 +4,7 @@ import {faPlay, faAngleLeft, faAngleRight} from '@fortawesome/free-solid-svg-ico
 
 const Player = ({currentSong, isPlaying, setIsPlaying}) => {
     const audioRef = useRef(null)
-    const [songInfo, setSongInfo] = useState({currentTime:null, duration: null})
+    const [songInfo, setSongInfo] = useState({currentTime: 0, duration: 0})
     const playSongHandler = () => {
         if(isPlaying){
             audioRef.current.pause();
@@ -23,20 +23,41 @@ const Player = ({currentSong, isPlaying, setIsPlaying}) => {
         return(
             Math.floor(time / 60) + ":" + ("0" + Math.floor(time % 60)).slice(-2)
         )
-        
-
+    }
+    const dragHandler = (e) => {
+        audioRef.current.currentTime = e.target.value
+        setSongInfo({...songInfo, currentTime: e.target.value})
     }
     return(
         <div className = "player">
              <div className = "time-control">
                 <p>{getTime(songInfo.currentTime)}</p>
-                <input type = "range" />
+                <input 
+                    type = "range" 
+                    min = {0}
+                    max = {songInfo.duration}
+                    value = {songInfo.currentTime} 
+                    onChange = {dragHandler}
+                />
                 <p>{getTime(songInfo.duration)}</p>
              </div>
             <div className = "play-control">
-                <FontAwesomeIcon className = "play" size = "2x"  icon = {faAngleLeft} />
-                <FontAwesomeIcon onClick = {playSongHandler} className = "play" size = "2x"  icon = {faPlay} />
-                <FontAwesomeIcon className = "play" size = "2x"  icon = {faAngleRight} />
+                <FontAwesomeIcon 
+                    className = "play" 
+                    size = "2x"  
+                    icon = {faAngleLeft} 
+                />
+                <FontAwesomeIcon 
+                    onClick = {playSongHandler} 
+                    className = "play" 
+                    size = "2x"  
+                    icon = {faPlay} 
+                />
+                <FontAwesomeIcon 
+                    className = "play" 
+                    size = "2x"  
+                    icon = {faAngleRight} 
+                />
             </div>
             <audio 
                 onTimeUpdate = {timeUpdateHandler} 
