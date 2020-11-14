@@ -1,10 +1,36 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlay, faAngleLeft, faAngleRight, faPause} from '@fortawesome/free-solid-svg-icons';
+import { playAudio } from '../util';
 
-const Player = ({audioRef, currentSong, isPlaying, setIsPlaying, songInfo, setSongInfo, songs, setCurrentSong}) => {
-    
-    
+const Player = ({
+    audioRef, 
+    currentSong, 
+    isPlaying, 
+    setIsPlaying, 
+    songInfo, 
+    setSongInfo, 
+    songs, 
+    setCurrentSong,
+    setSongs
+}) => {
+
+    useEffect(() => {
+        const newSongs = songs.map((song) => {
+            if(song.id === currentSong.id){
+                return{
+                    ...song,
+                    active: true
+                }
+            }else{
+                return{
+                    ...song,
+                    active: false
+                }
+            }
+        })
+        setSongs(newSongs)
+    }, [currentSong])
     const playSongHandler = () => {
         if(isPlaying){
             audioRef.current.pause();
@@ -16,17 +42,19 @@ const Player = ({audioRef, currentSong, isPlaying, setIsPlaying, songInfo, setSo
     }
     const skipTrackHandler = (direction) => {
         let currentIndex = songs.findIndex((song) => (song.id === currentSong.id))
-        console.log(currentIndex)
+
         if(direction === 'skip-forward'){
-            let nextSong = setCurrentSong(songs[(currentIndex + 1) % songs.length])
+            setCurrentSong(songs[(currentIndex + 1) % songs.length])
         }
         if(direction === 'skip-back'){
             if(currentIndex === 0){
-                return setCurrentSong(songs[songs.length-1])
-                
+                setCurrentSong(songs[songs.length-1])
+                playAudio(isPlaying, audioRef)
+                return                
             }
-            let nextSong = setCurrentSong(songs[(currentIndex - 1) % songs.length])
+            setCurrentSong(songs[(currentIndex - 1) % songs.length])
         }
+        playAudio(isPlaying, audioRef)
     }
     
     const getTime = (time) => {
@@ -41,7 +69,7 @@ const Player = ({audioRef, currentSong, isPlaying, setIsPlaying, songInfo, setSo
     return(
         <div className = "player">
              <div className = "time-control">
-                <p>{getTime(songInfo.currentTime)}</p>
+                <p>{songInfo.duration? getTime(songInfo.currentTime) : "0:00"}</p>
                 <input 
                     type = "range" 
                     min = {0}
